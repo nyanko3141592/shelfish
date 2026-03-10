@@ -123,6 +123,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         edgeItem.submenu = edgeMenu
         menu.addItem(edgeItem)
 
+        let loginItem = NSMenuItem(title: "Launch at Login", action: #selector(toggleLaunchAtLogin(_:)), keyEquivalent: "")
+        loginItem.target = self
+        loginItem.state = LaunchAtLogin.isEnabled ? .on : .off
+        menu.addItem(loginItem)
+
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(title: "Quit Shelfish", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
@@ -135,5 +140,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let raw = sender.representedObject as? String,
               let edge = EdgePosition(rawValue: raw) else { return }
         changeEdge(edge)
+    }
+
+    @objc private func toggleLaunchAtLogin(_ sender: NSMenuItem) {
+        LaunchAtLogin.toggle()
     }
 }
