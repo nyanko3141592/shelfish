@@ -21,6 +21,7 @@ jobs:
           mkdir -p Shelfish.app/Contents/MacOS
           mkdir -p Shelfish.app/Contents/Resources
           cp .build/release/Shelfish Shelfish.app/Contents/MacOS/
+          cp Resources/AppIcon.icns Shelfish.app/Contents/Resources/
           cat > Shelfish.app/Contents/Info.plist << 'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -44,6 +45,8 @@ jobs:
               <string>13.0</string>
               <key>LSUIElement</key>
               <true/>
+              <key>CFBundleIconFile</key>
+              <string>AppIcon</string>
               <key>NSHighResolutionCapable</key>
               <true/>
               <key>CFBundleInfoDictionaryVersion</key>
