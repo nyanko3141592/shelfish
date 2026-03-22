@@ -1,0 +1,28 @@
+name: Shelfish
+options:
+  bundleIdPrefix: com.nyanko
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: false
+
+targets:
+  Shelfish:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/Shelfish
+    resources:
+      - path: Resources/Assets.xcassets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.nyanko.shelfish
+        INFOPLIST_FILE: Info.plist
+        CODE_SIGN_ENTITLEMENTS: Shelfish.entitlements
+        MARKETING_VERSION: "1.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        ENABLE_HARDENED_RUNTIME: true
+        CODE_SIGN_STYLE: Automatic
+        SWIFT_VERSION: "5.9"
+        MACOSX_DEPLOYMENT_TARGET: "13.0"
+        COMBINE_HIDPI_IMAGES: true

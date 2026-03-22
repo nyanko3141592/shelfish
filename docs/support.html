@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Shelfish</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+        .container { max-width: 720px; margin: 0 auto; padding: 60px 24px; }
+        h1 { font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+        .app-name { color: #888; margin-bottom: 40px; }
+        h2 { font-size: 1.2rem; font-weight: 600; margin-top: 32px; margin-bottom: 12px; color: #ccc; }
+        p { margin-bottom: 16px; color: #aaa; }
+        a { color: #0a84ff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .contact-box {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+        .contact-box p { margin-bottom: 12px; }
+        .faq-item { margin-bottom: 24px; }
+        .faq-q { font-weight: 600; color: #e0e0e0; margin-bottom: 4px; }
+        .faq-a { color: #aaa; }
+        .back { margin-top: 48px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Support</h1>
+        <p class="app-name">Shelfish for macOS</p>
+
+        <h2>FAQ</h2>
+
+        <div class="faq-item">
+            <p class="faq-q">Q: シェルフが表示されません</p>
+            <p class="faq-a">ファイルを画面端（デフォルトは右端）にドラッグしてください。ドラッグ中にのみシェルフが出現します。メニューバーのアイコンをクリックしても表示できます。</p>
+        </div>
+
+        <div class="faq-item">
+            <p class="faq-q">Q: シェルフの表示位置を変えたい</p>
+            <p class="faq-a">メニューバーのShelfishアイコンを右クリック → Position から上下左右を選択できます。</p>
+        </div>
+
+        <div class="faq-item">
+            <p class="faq-q">Q: ファイルはコピーされますか？</p>
+            <p class="faq-a">いいえ。ShelfishはファイルのURL参照を一時的に保持するだけで、ファイルのコピーや移動は行いません。</p>
+        </div>
+
+        <div class="faq-item">
+            <p class="faq-q">Q: ログイン時に自動起動するには？</p>
+            <p class="faq-a">メニューバーのShelfishアイコンを右クリック → 「Launch at Login」をオンにしてください。</p>
+        </div>
+
+        <h2>Contact</h2>
+        <div class="contact-box">
+            <p>バグ報告・機能リクエストは GitHub Issues からお願いします。</p>
+            <p><a href="https://github.com/nyanko3141592/shelfish/issues">→ GitHub Issues を開く</a></p>
+        </div>
+
+        <p class="back"><a href="index.html">← Back to Shelfish</a></p>
+    </div>
+</body>
+</html>
