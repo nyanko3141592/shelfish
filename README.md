@@ -1,44 +1,72 @@
-# Shelfish
+<p align="center">
+  <img src="Resources/AppIcon.png" width="128" height="128" alt="Shelfish App Icon">
+</p>
 
-> A lightweight file shelf for macOS — drag files to the screen edge to temporarily hold them, then drag them wherever you need.
+<h1 align="center">Shelfish</h1>
 
-<!-- TODO: Add demo GIF here -->
-<!-- ![Demo](docs/demo.gif) -->
+<p align="center">
+  <strong>A lightweight file shelf for macOS</strong><br>
+  Drag files to the screen edge to temporarily hold them, then drop them wherever you need.
+</p>
 
-## Quick Start
+<p align="center">
+  <img src="https://img.shields.io/badge/macOS-13%2B-black?logo=apple&logoColor=white" alt="macOS 13+">
+  <img src="https://img.shields.io/badge/Swift-5.9-F05138?logo=swift&logoColor=white" alt="Swift 5.9">
+  <img src="https://img.shields.io/badge/License-MIT-blue" alt="MIT License">
+  <img src="https://img.shields.io/badge/Size-~50KB-green" alt="~50KB">
+</p>
 
-1. **Download** `Shelfish-v1.0.0-arm64.zip` from [Releases](https://github.com/nyanko3141592/shelfish/releases)
-2. **Unzip** and move `Shelfish.app` to `/Applications`
-3. **Launch** — a menu bar icon (tray icon) appears. That's it!
+<p align="center">
+  <a href="README_ja.md">日本語</a>
+</p>
 
-> The app is not code-signed. On first launch: right-click → **Open**, or allow in **System Settings → Privacy & Security**.
+---
+
+<!-- TODO: Add demo GIF -->
+<!-- <p align="center"><img src="docs/demo.gif" width="600" alt="Demo"></p> -->
 
 ## How It Works
 
-1. **Drag a file toward the screen edge** — the shelf appears
-2. **Drop it** — the file is held on the shelf
-3. **Drag it out** to another app or folder — done, the file is removed from the shelf
-4. Shelf **auto-hides** when empty
+1. **Drag a file toward the screen edge** — the shelf slides into view
+2. **Drop it on the shelf** — the file is held there temporarily
+3. **Drag it out** to another app or folder — done, the shelf auto-hides
+
+<br>
+
+## Features
+
+| | Feature | |
+|---|---|---|
+| :open_file_folder: | **Auto show/hide** — shelf appears on drag, hides when empty | |
+| :round_pushpin: | **Edge-snapped** — left, right, top, or bottom of your screen | |
+| :rocket: | **Launch at Login** — starts silently via launchd | |
+| :ghost: | **Invisible presence** — no Dock icon, menu bar only, never steals focus | |
+| :feather: | **Tiny footprint** — ~50KB, zero dependencies, file references only | |
+| :framed_picture: | **Icon grid** — shows file icons and names at a glance | |
+
+<br>
+
+## Quick Start
+
+1. **Download** the latest `Shelfish-v1.0.0-arm64.zip` from [Releases](https://github.com/nyanko3141592/shelfish/releases)
+2. **Unzip** and move `Shelfish.app` to `/Applications`
+3. **Launch** — a menu bar icon appears. That's it!
+
+> [!NOTE]
+> The app is not code-signed. On first launch, right-click the app and select **Open**, or allow it in **System Settings > Privacy & Security**.
+
+### Menu Bar Options
 
 Right-click the menu bar icon to:
 - Change shelf position (Left / Right / Top / Bottom)
 - Toggle **Launch at Login**
 - Quit
 
-## Features
-
-- Auto show/hide on drag
-- Icon grid with file names
-- Edge-snapped (configurable: left / right / top / bottom)
-- Launch at Login (launchd)
-- Never steals focus from your current app
-- File references only — zero disk overhead
-- No Dock icon, menu bar only
-- ~50KB, zero dependencies
+<br>
 
 ## Build from Source
 
-Requires macOS 13+ and Swift 5.9+.
+Requires **macOS 13+** and **Swift 5.9+**.
 
 ```bash
 git clone https://github.com/nyanko3141592/shelfish.git
@@ -46,6 +74,8 @@ cd shelfish
 swift build -c release
 .build/release/Shelfish
 ```
+
+<br>
 
 ## Architecture
 
@@ -65,6 +95,8 @@ Sources/Shelfish/
 ```
 
 See [CLAUDE.md](CLAUDE.md) for detailed architecture notes.
+
+<br>
 
 ## Contributing
 
