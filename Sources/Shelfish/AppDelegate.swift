@@ -3,7 +3,7 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem!
     private var shelfWindow: ShelfWindow!
-    private var triggerWindow: EdgeTriggerWindow!
+    private var triggerWindows: [EdgeTriggerWindow] = []
     private var hideTimer: Timer?
     private var forceVisible = false
     private var edgePosition: EdgePosition = .load()
@@ -16,11 +16,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self?.scheduleHide()
         }
 
-        triggerWindow = EdgeTriggerWindow(edge: edgePosition)
-        triggerWindow.onDragEntered = { [weak self] coord in
-            self?.showShelf(at: coord)
+        setupTriggerWindows()
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(screensDidChange(_:)),
+            name: NSApplication.didChangeScreenParametersNotification,
+            object: nil
+        )
+    }
+
+    private func setupTriggerWindows() {
+        for window in triggerWindows {
+            window.orderOut(nil)
         }
-        triggerWindow.orderFront(nil)
+        triggerWindows.removeAll()
+
+        for screen in NSScreen.screens {
+            let trigger = EdgeTriggerWindow(edge: edgePosition, screen: screen)
+            trigger.onDragEntered = { [weak self] screen, coord in
+                self?.showShelf(at: coord, on: screen)
+            }
+            trigger.orderFront(nil)
+            triggerWindows.append(trigger)
+        }
+    }
+
+    @objc private func screensDidChange(_ notification: Notification) {
+        setupTriggerWindows()
     }
 
     private func setupStatusItem() {
@@ -56,10 +79,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func showShelf(at coord: CGFloat?) {
+    func showShelf(at coord: CGFloat?, on screen: NSScreen? = nil) {
         hideTimer?.invalidate()
         hideTimer = nil
-        shelfWindow.positionAtEdge(mouseY: coord)
+        shelfWindow.positionAtEdge(mouseY: coord, on: screen)
         shelfWindow.animator().alphaValue = 1
         shelfWindow.orderFront(nil)
     }
@@ -91,7 +114,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         newEdge.save()
 
         shelfWindow.orderOut(nil)
-        triggerWindow.orderOut(nil)
 
         shelfWindow = ShelfWindow(edge: newEdge)
         shelfWindow.onDragComplete = { [weak self] in
@@ -99,11 +121,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         shelfWindow.alphaValue = 0
 
-        triggerWindow = EdgeTriggerWindow(edge: newEdge)
-        triggerWindow.onDragEntered = { [weak self] coord in
-            self?.showShelf(at: coord)
-        }
-        triggerWindow.orderFront(nil)
+        setupTriggerWindows()
     }
 
     private func showContextMenu() {

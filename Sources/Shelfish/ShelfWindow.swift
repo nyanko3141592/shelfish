@@ -1,7 +1,7 @@
 import Cocoa
 
 class ShelfWindow: NSPanel {
-    private static let shelfWidth: CGFloat = 80
+    private static let shelfWidth: CGFloat = 88
     private static let shelfHeight: CGFloat = 360
 
     let edge: EdgePosition
@@ -45,8 +45,8 @@ class ShelfWindow: NSPanel {
     override var canBecomeKey: Bool { true }
 
     /// Position the shelf at the configured edge, optionally centered on a Y coordinate
-    func positionAtEdge(mouseY: CGFloat?) {
-        guard let screen = NSScreen.main else { return }
+    func positionAtEdge(mouseY: CGFloat?, on screen: NSScreen? = nil) {
+        guard let screen = screen ?? NSScreen.main else { return }
         let sf = screen.visibleFrame
 
         let w: CGFloat

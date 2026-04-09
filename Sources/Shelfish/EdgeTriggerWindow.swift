@@ -3,14 +3,16 @@ import Cocoa
 class EdgeTriggerWindow: NSPanel {
     private static let triggerThickness: CGFloat = 24
 
-    var onDragEntered: ((CGFloat) -> Void)?
+    var onDragEntered: ((NSScreen, CGFloat) -> Void)?
     private var currentEdge: EdgePosition = .right
+    private(set) var targetScreen: NSScreen
 
     /// Legacy pasteboard type used by Finder
     private static let filenamesPboardType = NSPasteboard.PasteboardType("NSFilenamesPboardType")
 
-    init(edge: EdgePosition) {
+    init(edge: EdgePosition, screen: NSScreen) {
         self.currentEdge = edge
+        self.targetScreen = screen
         super.init(
             contentRect: .zero,
             styleMask: [.borderless, .nonactivatingPanel],
@@ -33,7 +35,7 @@ class EdgeTriggerWindow: NSPanel {
             guard let self = self else { return }
             let screenPoint = self.convertPoint(toScreen: point)
             let coord = self.currentEdge.isVertical ? screenPoint.y : screenPoint.x
-            self.onDragEntered?(coord)
+            self.onDragEntered?(self.targetScreen, coord)
         }
         contentView = triggerView
 
@@ -47,10 +49,13 @@ class EdgeTriggerWindow: NSPanel {
         )
     }
 
+    func reposition() {
+        positionAtEdge(currentEdge)
+    }
+
     private func positionAtEdge(_ edge: EdgePosition) {
         currentEdge = edge
-        guard let screen = NSScreen.main else { return }
-        let sf = screen.visibleFrame
+        let sf = targetScreen.visibleFrame
         let t = Self.triggerThickness
 
         let frame: NSRect
