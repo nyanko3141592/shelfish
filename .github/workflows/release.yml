@@ -55,11 +55,24 @@ jobs:
           </plist>
           PLIST
 
-      - name: Package zip
-        run: zip -r Shelfish-${{ github.ref_name }}-arm64.zip Shelfish.app
+      - name: Ad-hoc code sign
+        run: codesign --force --deep --sign - Shelfish.app
+
+      - name: Create DMG
+        run: |
+          # Create a temporary directory for DMG contents
+          mkdir -p dmg-contents
+          cp -R Shelfish.app dmg-contents/
+          ln -s /Applications dmg-contents/Applications
+
+          # Create DMG
+          hdiutil create -volname "Shelfish" \
+            -srcfolder dmg-contents \
+            -ov -format UDZO \
+            Shelfish-${{ github.ref_name }}-arm64.dmg
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: Shelfish-${{ github.ref_name }}-arm64.zip
+          files: Shelfish-${{ github.ref_name }}-arm64.dmg
           generate_release_notes: true
