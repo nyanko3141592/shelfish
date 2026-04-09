@@ -96,9 +96,15 @@ class ShelfViewController: NSViewController {
     }
 
     private func handleDroppedURLs(_ urls: [URL]) {
-        for url in urls {
-            if items.contains(where: { $0.url == url }) { continue }
-            addItem(FileShelfItem(url: url))
+        // Filter out URLs that already exist in any item
+        let existingURLs = items.reduce(into: Set<URL>()) { $0.formUnion($1.allURLs) }
+        let newURLs = urls.filter { !existingURLs.contains($0) }
+        guard !newURLs.isEmpty else { return }
+
+        if newURLs.count == 1 {
+            addItem(FileShelfItem(url: newURLs[0]))
+        } else {
+            addItem(FileShelfItem(urls: newURLs))
         }
     }
 
