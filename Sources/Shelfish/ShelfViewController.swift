@@ -6,6 +6,8 @@ class ShelfViewController: NSViewController {
     private let iconContainer = NSStackView()
     private let emptyLabel = NSTextField(labelWithString: "Drop here")
     private let edge: EdgePosition
+    private let previewPopover = NSPopover()
+    private weak var previewAnchorView: NSView?
     var onDragComplete: (() -> Void)?
 
     init(edge: EdgePosition) {
@@ -101,26 +103,59 @@ class ShelfViewController: NSViewController {
         let newURLs = urls.filter { !existingURLs.contains($0) }
         guard !newURLs.isEmpty else { return }
 
-        if newURLs.count == 1 {
-            addItem(FileShelfItem(url: newURLs[0]))
+        // Merge into the first existing item so everything lives in one bundle,
+        // then you can pull the whole bundle out at once or open any single file
+        // from the preview popover.
+        if let first = items.first {
+            let merged = first.adding(newURLs)
+            replaceItem(at: 0, with: merged)
         } else {
-            addItem(FileShelfItem(urls: newURLs))
+            let item = newURLs.count == 1
+                ? FileShelfItem(url: newURLs[0])
+                : FileShelfItem(urls: newURLs)
+            addItem(item)
         }
     }
 
     func addItem(_ item: FileShelfItem) {
         items.append(item)
-
-        let itemView = ShelfItemView(item: item) { [weak self] id in
-            self?.removeItem(id: id)
-        }
-        iconContainer.addArrangedSubview(itemView)
-
+        iconContainer.addArrangedSubview(makeItemView(for: item))
         updateEmptyState()
+    }
+
+    private func replaceItem(at index: Int, with newItem: FileShelfItem) {
+        let oldView = iconContainer.arrangedSubviews[index]
+        iconContainer.removeArrangedSubview(oldView)
+        oldView.removeFromSuperview()
+
+        items[index] = newItem
+        let newView = makeItemView(for: newItem)
+        iconContainer.insertArrangedSubview(newView, at: index)
+
+        // If a preview was open for this item, refresh it with the new contents
+        if previewPopover.isShown {
+            previewPopover.performClose(nil)
+            showPreview(for: newItem, near: newView)
+        }
+    }
+
+    private func makeItemView(for item: FileShelfItem) -> ShelfItemView {
+        ShelfItemView(
+            item: item,
+            onRemove: { [weak self] id in
+                self?.removeItem(id: id)
+            },
+            onClick: { [weak self] view in
+                self?.handleItemClicked(view)
+            }
+        )
     }
 
     func removeItem(id: UUID) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
+        if previewPopover.isShown {
+            previewPopover.performClose(nil)
+        }
         items.remove(at: index)
         let itemView = iconContainer.arrangedSubviews[index]
         iconContainer.removeArrangedSubview(itemView)
@@ -132,8 +167,51 @@ class ShelfViewController: NSViewController {
         }
     }
 
+    /// Remove a single URL from the item. If it was the last URL, remove the item entirely.
+    func removeURL(_ url: URL, fromItem id: UUID) {
+        guard let index = items.firstIndex(where: { $0.id == id }) else { return }
+        if let updated = items[index].removing(url) {
+            replaceItem(at: index, with: updated)
+        } else {
+            removeItem(id: id)
+        }
+    }
+
     private func updateEmptyState() {
         emptyLabel.isHidden = !items.isEmpty
+    }
+
+    // MARK: - Preview
+
+    private func handleItemClicked(_ view: ShelfItemView) {
+        if previewPopover.isShown && previewAnchorView === view {
+            previewPopover.performClose(nil)
+            return
+        }
+        showPreview(for: view.item, near: view)
+    }
+
+    private func showPreview(for item: FileShelfItem, near anchor: NSView) {
+        if previewPopover.isShown {
+            previewPopover.performClose(nil)
+        }
+
+        let preview = PreviewViewController(item: item) { [weak self] url in
+            self?.removeURL(url, fromItem: item.id)
+        }
+        previewPopover.contentViewController = preview
+        previewPopover.behavior = .transient
+        previewPopover.animates = true
+        previewAnchorView = anchor
+
+        let preferredEdge: NSRectEdge
+        switch edge {
+        case .right: preferredEdge = .minX
+        case .left: preferredEdge = .maxX
+        case .top: preferredEdge = .maxY
+        case .bottom: preferredEdge = .minY
+        }
+        previewPopover.show(relativeTo: anchor.bounds, of: anchor, preferredEdge: preferredEdge)
     }
 }
 
