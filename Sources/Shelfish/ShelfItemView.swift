@@ -5,13 +5,20 @@ class ShelfItemView: NSView {
 
     let item: FileShelfItem
     private let onRemove: (UUID) -> Void
+    private let onClick: ((ShelfItemView) -> Void)?
     private var isDragging = false
+    private var mouseDownLocation: NSPoint?
     private var trackingArea: NSTrackingArea?
     private let removeButton = RemoveButton()
 
-    init(item: FileShelfItem, onRemove: @escaping (UUID) -> Void) {
+    init(
+        item: FileShelfItem,
+        onRemove: @escaping (UUID) -> Void,
+        onClick: ((ShelfItemView) -> Void)? = nil
+    ) {
         self.item = item
         self.onRemove = onRemove
+        self.onClick = onClick
         super.init(frame: NSRect(origin: .zero, size: Self.size))
         setupUI()
         setupTracking()
@@ -148,12 +155,21 @@ class ShelfItemView: NSView {
             return
         }
         isDragging = false
+        mouseDownLocation = event.locationInWindow
     }
 
     override func mouseDragged(with event: NSEvent) {
         let point = convert(event.locationInWindow, from: nil)
         if isPointInRemoveButton(point) { return }
         guard !isDragging else { return }
+        guard let start = mouseDownLocation else { return }
+
+        let dx = event.locationInWindow.x - start.x
+        let dy = event.locationInWindow.y - start.y
+        // Require a small movement before starting drag — otherwise a click with
+        // a tiny jitter would immediately turn into a drag session.
+        guard dx * dx + dy * dy >= 16 else { return }
+
         isDragging = true
 
         var draggingItems: [NSDraggingItem] = []
@@ -169,6 +185,19 @@ class ShelfItemView: NSView {
         }
 
         beginDraggingSession(with: draggingItems, event: event, source: self)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        let point = convert(event.locationInWindow, from: nil)
+        let wasDragging = isDragging
+        let hadMouseDown = mouseDownLocation != nil
+        isDragging = false
+        mouseDownLocation = nil
+
+        if wasDragging || isPointInRemoveButton(point) { return }
+        guard hadMouseDown else { return }
+
+        onClick?(self)
     }
 }
 
